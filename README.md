@@ -14,7 +14,7 @@ python .\job_test.py --stopwords=.\stopwords.txt  .\reviews_devset.json > .\outp
 To run in Hadoop "simulation" mode :
 > It utilizes subtasks and kinda does it in a way hadoop does.  
 ```
-python .\job_test.py --runner=local --no-bootstrap-mrjob .\reviews_devset.json > .\output.txt
+python .\job_test.py --runner=local --no-bootstrap-mrjob --stopwords=.\stopwords.txt .\reviews_devset.json > .\output.txt
 
 ```
 
