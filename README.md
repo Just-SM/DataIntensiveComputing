@@ -8,26 +8,20 @@
 
 To run in regular test (python) mode :
 ```
-python .\job_test.py --stopwords=.\stopwords.txt  .\reviews_devset.json > .\output.txt 
+python .\job_test3.py --stopwords=.\stopwords.txt  .\reviews_devset.json > .\output.txt 
 ````
 
 To run in Hadoop "simulation" mode :
 > It utilizes subtasks and kinda does it in a way hadoop does.  
 ```
-python .\job_test.py --runner=local --no-bootstrap-mrjob --stopwords=.\stopwords.txt .\reviews_devset.json > .\output.txt
+python .\job_test3.py --runner=local --no-bootstrap-mrjob --stopwords=.\stopwords.txt .\reviews_devset.json > .\output.txt
 
 ```
 
-To calculate execution time uncomment main to :
-
-> ❗ Not working in Hadoop "simulation" mode because of subtasks ❗ 
+To run on Hadoop real mode:
 
 ```
-if __name__ == '__main__':
-    start_time = datetime.now()
-    MRWordFrequencyCount.run()
-    end_time = datetime.now()
-    elapsed_time = end_time - start_time
-    print ("Time : " + str(elapsed_time))
+
+python job_test3.py --hadoop-streaming-jar /usr/lib/hadoop/tools/lib/hadoop-streaming-3.3.5.jar -r hadoop --stopwords=stopwords.txt hdfs:///user/dic24_shared/amazon-reviews/full/reviewscombined.json > output.txt
 
 ```
