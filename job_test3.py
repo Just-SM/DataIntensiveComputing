@@ -60,6 +60,8 @@ class MRChiCalculator(MRJob):
 
         self.glob_dict = dict(data)
 
+        total_set = set()
+
         for cat,cat_dict in self.glob_dict.items():
 
             cat_list = []
@@ -79,6 +81,8 @@ class MRChiCalculator(MRJob):
                         continue
                     if word in other_cat_dict:
                         b += other_cat_dict[word]
+                        d += other_cat_dict['@#reserved#@'] - other_cat_dict[word]
+
                     else:
                         d += other_cat_dict['@#reserved#@']
                     n += other_cat_dict['@#reserved#@']
@@ -88,8 +92,13 @@ class MRChiCalculator(MRJob):
                 else:
                     cat_list.append( (word, 999999999999))
 
-            yield cat, " ".join( [ str(x[0]) + ':' + str(x[1]) for x in sorted(sorted(cat_list, key=lambda x: x[1],reverse=True)[:75],key=lambda x: x[0] ) ] )
-            # yield cat, sorted(sorted(cat_list, key=lambda x: x[1],reverse=True)[:75],key=lambda x: x[0] )
+            sort_list = sorted(cat_list, key=lambda x: x[1],reverse=True)[:75]
+
+            yield cat, " ".join( [ str(x[0]) + ':' + str(x[1]) for x in sort_list ] )
+
+            total_set.update([x[0] for x in sort_list])
+
+        yield None," ".join(sorted(total_set))
 
 
     def steps(self):
