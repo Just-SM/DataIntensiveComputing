@@ -4,25 +4,34 @@ import re
 
 
 class MRChiCalculator(MRJob):
-
-    # def merge_and_sum_loop(self,*dicts):
-    #     merged_dict = {}
-    #     for d in dicts:
-    #         for key, value in d.items():
-    #             merged_dict[key] = merged_dict.get(key, 0) + value
-    #     return merged_dict
+    """mrjob derived class used 
+    for chi-square calculation
+    
+    Keyword arguments:
+    MRJob -- MRJoB class defined in mrjob module
+    Return: text file with top 75 words by chiq-square by category
+    """
+    
 
     def configure_args(self):
         super(MRChiCalculator, self).configure_args()
         self.add_file_arg('--stopwords')
 
     def init_words_mapper(self):
+        """
+        preload stopwords
+        """
+        
         self.categories = dict()
 
         with open(self.options.stopwords) as f:
             self.stopwords = frozenset([x[:-1] for x in f.readlines()])
 
     def mid_words_mapper(self, _, line):
+        """
+        stopwords filtering and counting occurences of words per catgory
+        """
+        
         temp = json.loads(line)
 
         res = set([x for x in re.split('\W|\d|_', temp['reviewText'].lower()) if len(x) > 1]) - self.stopwords
@@ -42,13 +51,15 @@ class MRChiCalculator(MRJob):
 
 
     def final_words_mapper(self):
+        """ yielding <category, word count dictionary>
+        """
+        
 
         for key,val in self.categories.items():
             yield key, val
 
     
     def reduce_cat_number(self,cat,dicts):
-
         merged_dict = {}
         for d in dicts:
             for key, value in d.items():
@@ -57,6 +68,13 @@ class MRChiCalculator(MRJob):
 
 
     def reduce_all_cats_mid(self,_,data):
+        """counting chi-square
+        
+        Keyword arguments:
+        data -- dictionary storing category stings and word count dictionary
+        Return: top 75 terms with their chi-square results
+        """
+        
 
         self.glob_dict = dict(data)
 
